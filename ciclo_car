@@ -1,0 +1,100 @@
+.model small       
+
+.stack 100h            
+
+.data
+    car1 db ?
+    
+    NMAI db 30h
+    NMIN db 30h
+    
+    entrata db 'inserisci un carattere: ', '$'
+    uscitaMai db 'caratteri maiuscoli: ', '$'
+    uscitaMin db 'caratteri minuscoli: ', '$'
+    Acapo db ,13,10,'$' 
+                     
+.code
+.start up
+    mov ax, @data     
+    mov ds, ax 
+    ;inizio ciclo    
+    inizio:    
+    ;inserimento del carattere
+    mov ah, 09h
+        mov dx, offset entrata  
+        int 21h 
+                
+        mov ah, 01h             
+        int 21h                 
+        mov car1, al
+            
+        mov ah,09h
+        mov dx, offset Acapo    
+        int 21h  
+        ;controllo se il dato inserito e' un carattere e se e' maiuscolo o minuscolo
+        mov al, car1
+        
+        cmp al, ' '            
+        je fintut                                        
+        
+        cmp al, 'A'                          
+        jge Vero1A                             
+        jmp fine                              
+                                                   
+        Vero1A:                             
+        cmp al, 'Z'                      
+        jle Vero1B                        
+        jmp Falso1B                        
+                                                       
+        Vero1B:                               
+        inc NMAI                          
+        jmp fine                          
+                                                      
+        Falso1B:                          
+        cmp al, 'a'                       
+        jge Vero1C                      
+        jmp fine                        
+                                                   
+        Vero1C:                                
+        cmp al, 'z'                       
+        jle Vero1D                         
+        jmp fine                         
+                                                      
+        Vero1D:                           
+        inc NMIN                         
+        jmp fine                         
+                                    
+    fine:                           
+    nop   
+           
+    ;riniziare il ciclo               
+    jmp inizio
+    ;fine ciclo dopo l'inserimento della barra spaziatrice
+    fintut:
+    ;stampa finale con i contatori dei caratteri maiuscoli e minuscoli
+    mov ah,09h
+    mov dx, offset Acapo               
+    int 21h         
+            
+    mov ah, 09h
+    mov dx, offset uscitaMai           
+    int 21h
+         
+    mov ah, 02h
+    mov dl, NMAI                       
+    int 21h
+            
+    mov ah, 09h
+    mov dx, offset Acapo              
+    int 21h
+            
+    mov ah, 09h
+    mov dx, offset uscitaMin          
+    int 21h
+            
+    mov ah, 02h                       
+    mov dl, NMIN
+    int 21h
+            
+end                         
+
